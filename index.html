@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 模型使用统计</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .card {
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 450px;
+            width: 100%;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(102,126,234,0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .badge {
+            display: inline-block;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+        }
+        
+        .title {
+            font-size: 26px;
+            font-weight: 800;
+            background: linear-gradient(90deg, #1a1a2e, #667eea);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .date {
+            color: #999;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .stat-box {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border: 1px solid #e9ecef;
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-box:hover {
+            transform: translateY(-3px);
+        }
+        
+        .stat-label {
+            font-size: 11px;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: 800;
+            color: #1a1a2e;
+        }
+        
+        .stat-value.highlight {
+            color: #667eea;
+        }
+        
+        .stat-usd {
+            font-size: 12px;
+            color: #27ae60;
+            margin-top: 4px;
+            font-weight: 600;
+        }
+        
+        .model-info {
+            background: linear-gradient(135deg, #667eea10, #764ba210);
+            border: 1px solid #667eea30;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .model-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 10px;
+        }
+        
+        .model-details {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .detail-item {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .detail-item span {
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .progress-section {
+            margin-bottom: 20px;
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        
+        .footer {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .footer-text {
+            font-size: 12px;
+            color: #ccc;
+        }
+        
+        .share-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .share-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102,126,234,0.4);
+        }
+        
+        .emoji {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="header">
+            <div class="badge">📊 AI 模型使用统计</div>
+            <div class="emoji">🤖</div>
+            <div class="title">今日模型使用情况</div>
+            <div class="date">2026年2月3日</div>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div class="stat-label">上下文 Token</div>
+                <div class="stat-value">165K</div>
+                <div class="stat-usd">69% 已使用</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">输出 Token</div>
+                <div class="stat-value highlight">234</div>
+                <div class="stat-usd">约 $0.001</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">会话数</div>
+                <div class="stat-value">3</div>
+                <div class="stat-usd">活跃会话</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">预估费用</div>
+                <div class="stat-value highlight">$0.02</div>
+                <div class="stat-usd">约 ¥0.5</div>
+            </div>
+        </div>
+        
+        <div class="model-info">
+            <div class="model-name">🧠 当前模型</div>
+            <div class="model-details">
+                <div class="detail-item">模型: <span>Minimax-M2.1</span></div>
+                <div class="detail-item">上下文: <span>200K</span></div>
+                <div class="detail-item">状态: <span>活跃</span></div>
+            </div>
+        </div>
+        
+        <div class="progress-section">
+            <div class="progress-label">
+                <span>上下文使用率</span>
+                <span>69%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 69%"></div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <div class="footer-text">
+                💡 费用超低，性价比超高！<br>
+                MiniMax-M2.1 · OpenClaw
+            </div>
+            <button class="share-btn" onclick="shareCard()">
+                📤 分享此卡片
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        function shareCard() {
+            // 复制页面 URL
+            const url = window.location.href;
+            navigator.clipboard.writeText(url).then(() => {
+                alert('链接已复制！分享给朋友吧~');
+            }).catch(() => {
+                alert('请手动复制地址分享');
+            });
+        }
+        
+        // 动画效果
+        document.addEventListener('DOMContentLoaded', () => {
+            const card = document.querySelector('.card');
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 100);
+        });
+    </script>
+</body>
+</html>

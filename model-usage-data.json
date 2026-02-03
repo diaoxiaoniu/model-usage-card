@@ -1,0 +1,12 @@
+{
+  "date": "2026-02-03",
+  "model": "Minimax-M2.1",
+  "contextTokens": 165234,
+  "outputTokens": 234,
+  "contextPercent": 69,
+  "sessions": 3,
+  "costUSD": 0.02,
+  "costCNY": 0.5,
+  "maxContext": 200000,
+  "operations": ["OpenSea查询", "CryptoKitties购买", "Obsidian同步"]
+}
